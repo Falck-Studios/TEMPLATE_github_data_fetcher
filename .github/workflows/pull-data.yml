@@ -1,0 +1,25 @@
+name: "Pulling Data from GitHub API"
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  pull-data:
+    name: "Pulling data"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+      - name: Uses action
+        id: fetcher
+        uses: Falck-Studios/public-copilot-metrics@main
+        with:
+          license-key: ${{ secrets.FALCK_STUDIOS_PRODUCT_LICENSE_KEY }}
+          authorization-token: ${{ steps.generate-token.outputs.token }}
